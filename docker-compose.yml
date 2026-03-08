@@ -1,0 +1,21 @@
+services:
+  app:
+    image: ghcr.io/vanderlust/testapp:latest
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: dokploy-network
+      traefik.http.routers.testapp-web.rule: "Host(`testapp.cessmedia.com`)"
+      traefik.http.routers.testapp-web.entrypoints: "web"
+      traefik.http.routers.testapp-web.middlewares: "redirect-to-https@file"
+      traefik.http.routers.testapp-web.service: "testapp-service"
+      traefik.http.routers.testapp-secure.rule: "Host(`testapp.cessmedia.com`)"
+      traefik.http.routers.testapp-secure.entrypoints: "websecure"
+      traefik.http.routers.testapp-secure.tls.certresolver: "letsencrypt"
+      traefik.http.routers.testapp-secure.service: "testapp-service"
+      traefik.http.services.testapp-service.loadbalancer.server.port: "3000"
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
